@@ -1,0 +1,14 @@
+{
+  "id": "com.sample.anjuke.20130912.0",
+  "files": [{
+    "id": "com.sample.anjuke.20130912.0",
+    "md5": "6614a18359869fbe9e51b50c95435b67",
+    "url": "http://bcs.duapp.com/test-me/com.sample.anjuke.apk"
+  }],
+  "fragments": [{
+    "host": "anjuke",
+    "name": "com.sample.anjuke.AnjukeFragment",
+    "code": "com.sample.anjuke.20130912.0"
+  }],
+  "version": "20130912.0"
+}
