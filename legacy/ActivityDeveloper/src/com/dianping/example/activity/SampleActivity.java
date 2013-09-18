@@ -1,3 +1,4 @@
+
 package com.dianping.example.activity;
 
 import android.app.Activity;
@@ -6,17 +7,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class SampleActivity extends Activity {
-	TextView text;
+    TextView text;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		text = new TextView(this);
-		text.setLayoutParams(new ViewGroup.LayoutParams(
-				ViewGroup.LayoutParams.FILL_PARENT,
-				ViewGroup.LayoutParams.FILL_PARENT));
-		setContentView(text);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        text = new TextView(this);
+        text.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.FILL_PARENT));
+        setContentView(text);
 
-		text.setText("You can change this activity and generate the unsigned apk file to ActivityLoader/assets/apks. The SampleActivity will be replaced.");
-	}
+        text.setText("This is SampleActivity,but loaded from ActivityDeveloper_2.apk");
+    }
 }
