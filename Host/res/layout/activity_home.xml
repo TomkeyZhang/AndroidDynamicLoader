@@ -59,6 +59,14 @@
         android:layout_below="@+id/go_helloworld"
         android:layout_centerHorizontal="true"
         android:text="BitmapFun demo" />
+    <Button
+        android:id="@+id/go_anjuke"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/go_bitmapfun"
+        android:layout_centerHorizontal="true"
+        android:text="Anjuke demo" />
 
     <TextView
         android:layout_width="wrap_content"
