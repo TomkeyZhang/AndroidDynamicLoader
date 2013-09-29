@@ -1,9 +1,13 @@
 
-package com.dianping.example.activity;
+package com.anjuke.dynamicloader;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -12,12 +16,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import dalvik.system.DexClassLoader;
 
-public class SampleActivity extends FragmentActivity {
+public class DynamicLoaderActivity extends FragmentActivity {
     private static final String EXTRA_APK_PATH = "path";
     private static final String EXTRA_FRAGMENT_CLASS = "class";
     private AssetManager asm;
@@ -26,6 +32,38 @@ public class SampleActivity extends FragmentActivity {
     private ClassLoader classLoader;
     private String apkPath;
     private String fragmentClass;
+
+    public static void start(Context context, String apkPath, String fragmentClass) {
+        Intent intent = new Intent(context, DynamicLoaderActivity.class);
+        intent.putExtra(EXTRA_APK_PATH, apkPath);
+        intent.putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass);
+        context.startActivity(intent);
+    }
+
+    private File getApk() throws IOException {
+        InputStream ins = getApplication().getAssets()
+                .open(apkPath);
+        byte[] bytes = new byte[ins.available()];
+        ins.read(bytes);
+        ins.close();
+
+        File f = new File(getApplication().getFilesDir(), "dex");
+        f.mkdir();
+        File outFile = new File(f, "FL_" + Integer.toHexString(apkPath.hashCode())
+                + ".apk");
+        FileOutputStream fos = new FileOutputStream(outFile);
+        fos.write(bytes);
+        fos.close();
+        return outFile;
+    }
+
+    private void createClassLoader(File apkFile) {
+        File fo = new File(getApplication().getFilesDir(),
+                "dexout");
+        fo.mkdir();
+        classLoader = new AnjukeDexClassLoader(apkFile.getAbsolutePath(),
+                fo.getAbsolutePath(), null, super.getClassLoader());
+    }
 
     private void createResAndTheme(File apkFile) {
         try {
@@ -88,11 +126,13 @@ public class SampleActivity extends FragmentActivity {
             apkPath = bundle.getString(EXTRA_APK_PATH);
             fragmentClass = bundle.getString(EXTRA_FRAGMENT_CLASS);
         }
-        // try {
-        // createResAndTheme(apkFile);
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
+        try {
+            File apkFile = getApk();
+            createClassLoader(apkFile);
+            createResAndTheme(apkFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onCreate(bundle);
         setContentView(createRootView());
         loadFragment();
@@ -105,4 +145,38 @@ public class SampleActivity extends FragmentActivity {
         outState.putString(EXTRA_FRAGMENT_CLASS, fragmentClass);
     }
 
+    @Override
+    public AssetManager getAssets() {
+        return asm == null ? super.getAssets() : asm;
+    }
+
+    @Override
+    public Resources getResources() {
+        return res == null ? super.getResources() : res;
+    }
+
+    @Override
+    public Theme getTheme() {
+        return thmeme == null ? super.getTheme() : thmeme;
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return classLoader == null ? super.getClassLoader() : classLoader;
+    }
+
+    public static class AnjukeDexClassLoader extends DexClassLoader {
+
+        public AnjukeDexClassLoader(String dexPath, String optimizedDirectory, String libraryPath, ClassLoader parent) {
+            super(dexPath, optimizedDirectory, libraryPath, parent);
+        }
+
+        @Override
+        public Class<?> loadClass(String className) throws ClassNotFoundException {
+            Log.d("zqt", className);
+            if (className.startsWith("android.support"))
+                return getParent().loadClass(className);
+            return super.loadClass(className);
+        }
+    }
 }

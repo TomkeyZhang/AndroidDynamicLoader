@@ -1,9 +1,10 @@
 
-package com.dianping.example.activity;
+package com.anjuke.jinpu.plugin;
 
 import java.io.File;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -17,15 +18,21 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-public class SampleActivity extends FragmentActivity {
+public class PluginActivity extends FragmentActivity {
     private static final String EXTRA_APK_PATH = "path";
     private static final String EXTRA_FRAGMENT_CLASS = "class";
     private AssetManager asm;
     private Resources res;
     private Theme thmeme;
-    private ClassLoader classLoader;
     private String apkPath;
     private String fragmentClass;
+
+    public static void start(Context context, String apkPath, String fragmentClass) {
+        Intent intent = new Intent(context, PluginActivity.class);
+        intent.putExtra(EXTRA_APK_PATH, apkPath);
+        intent.putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass);
+        context.startActivity(intent);
+    }
 
     private void createResAndTheme(File apkFile) {
         try {
@@ -60,16 +67,6 @@ public class SampleActivity extends FragmentActivity {
         }
     }
 
-    private View loadView() {
-        try {
-            return (View) getClassLoader().loadClass(
-                    fragmentClass).getConstructor(Context.class).newInstance(this);
-        } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-        return null;
-    }
-
     private View createRootView() {
         FrameLayout rootView = new FrameLayout(this);
         rootView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -88,11 +85,7 @@ public class SampleActivity extends FragmentActivity {
             apkPath = bundle.getString(EXTRA_APK_PATH);
             fragmentClass = bundle.getString(EXTRA_FRAGMENT_CLASS);
         }
-        // try {
-        // createResAndTheme(apkFile);
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
+        createResAndTheme(new File(apkPath));
         super.onCreate(bundle);
         setContentView(createRootView());
         loadFragment();
@@ -103,6 +96,21 @@ public class SampleActivity extends FragmentActivity {
         super.onSaveInstanceState(outState);
         outState.putString(EXTRA_APK_PATH, apkPath);
         outState.putString(EXTRA_FRAGMENT_CLASS, fragmentClass);
+    }
+
+    @Override
+    public AssetManager getAssets() {
+        return asm == null ? super.getAssets() : asm;
+    }
+
+    @Override
+    public Resources getResources() {
+        return res == null ? super.getResources() : res;
+    }
+
+    @Override
+    public Theme getTheme() {
+        return thmeme == null ? super.getTheme() : thmeme;
     }
 
 }
