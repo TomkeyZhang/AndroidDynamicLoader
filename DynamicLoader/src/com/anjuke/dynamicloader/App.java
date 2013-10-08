@@ -1,15 +1,13 @@
 
 package com.anjuke.dynamicloader;
 
-import java.io.File;
-
-import android.content.Context;
 
 public class App {
     private String mainFragment;
     private int version;
     private String packageName;
     private String apkUrl;
+    private String apkPath;
 
     public String getMainFragment() {
         return mainFragment;
@@ -43,9 +41,12 @@ public class App {
         this.apkUrl = apkUrl;
     }
 
-    public File getApkFile(Context context) {
-        File dex = context.getDir("dex", Context.MODE_PRIVATE);
-        dex.mkdir();
-        return new File(dex, packageName + version);
+    public String getApkPath() {
+        return apkPath;
     }
+
+    public void setApkPath(String apkPath) {
+        this.apkPath = apkPath;
+    }
+
 }
