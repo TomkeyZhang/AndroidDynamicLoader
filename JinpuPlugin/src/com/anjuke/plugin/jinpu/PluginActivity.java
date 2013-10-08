@@ -1,5 +1,5 @@
 
-package com.anjuke.jinpu.plugin;
+package com.anjuke.plugin.jinpu;
 
 import java.io.File;
 

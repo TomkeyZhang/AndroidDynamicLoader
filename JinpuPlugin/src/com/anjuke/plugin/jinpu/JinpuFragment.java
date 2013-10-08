@@ -1,5 +1,7 @@
 
-package com.anjuke.jinpu.plugin;
+package com.anjuke.plugin.jinpu;
+
+import com.anjuke.jinpu.plugin.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
