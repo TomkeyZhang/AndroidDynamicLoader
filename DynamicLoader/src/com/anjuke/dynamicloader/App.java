@@ -1,12 +1,15 @@
 
 package com.anjuke.dynamicloader;
 
+import java.io.File;
+
+import android.content.Context;
+
 public class App {
     private String mainFragment;
     private int version;
     private String packageName;
     private String apkUrl;
-    private String cachedApkUrl;
 
     public String getMainFragment() {
         return mainFragment;
@@ -40,12 +43,9 @@ public class App {
         this.apkUrl = apkUrl;
     }
 
-    public String getCachedApkUrl() {
-        return cachedApkUrl;
+    public File getApkFile(Context context) {
+        File dex = context.getDir("dex", Context.MODE_PRIVATE);
+        dex.mkdir();
+        return new File(dex, packageName + version);
     }
-
-    public void setCachedApkUrl(String cachedApkUrl) {
-        this.cachedApkUrl = cachedApkUrl;
-    }
-
 }
