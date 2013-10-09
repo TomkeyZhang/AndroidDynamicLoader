@@ -2,96 +2,78 @@
 package com.anjuke.dynamicloader;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
-import android.app.Activity;
-import android.content.Context;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 
-import dalvik.system.DexClassLoader;
-
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
     private AQuery aq;
-    private AnjukeApplication application;
-    String apkName;
-    String apkPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         aq = new AQuery(this);
-        // application = (AnjukeApplication) getApplication();
-        // aq.ajax("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/jinpu.json",
-        // String.class, new AjaxCallback<String>() {
-        // @Override
-        // public void callback(String url, String object, AjaxStatus status) {
-        // final App jinpuApp = JSON.parseObject(object, App.class);
-        // application.setJinpuApp(jinpuApp);
-        // File cachedFile = aq.getCachedFile(jinpuApp.getApkUrl());
-        // Log.d("zqt", "cachedFile:" + cachedFile);
-        // if (cachedFile == null) {
-        // Toast.makeText(getApplicationContext(), "正在下载金铺插件apk，请稍后..",
-        // Toast.LENGTH_LONG).show();
-        // aq.ajax(jinpuApp.getApkUrl(), File.class, 0, new AjaxCallback<File>()
-        // {
-        // @Override
-        // public void callback(String url, File file, AjaxStatus status) {
-        // Toast.makeText(getApplicationContext(), "金铺插件apk下载完成",
-        // Toast.LENGTH_SHORT).show();
-        // Log.d("zqt", "file:" + file.getTotalSpace());
-        // application.setJinPuLoader(file);
-        // startJinpuApp(jinpuApp);
-        // }
-        // });
-        // } else {
-        // application.setJinPuLoader(cachedFile);
-        // startJinpuApp(jinpuApp);
-        // }
-        // }
-        // });
+        setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {
+                "金铺插件"
+        }));
+    }
 
-        try {
-            apkName = getAssets().list("apks")[0];
-            apkPath = "apks/" + apkName;
-            File dex = getDir("dex", Context.MODE_PRIVATE);
-            dex.mkdir();
-            File f = new File(dex, apkName);
-            InputStream fis = getAssets().open(apkPath);
-            FileOutputStream fos = new FileOutputStream(f);
-            byte[] buffer = new byte[0xFF];
-            int len;
-            while ((len = fis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-            }
-            fis.close();
-            fos.close();
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        switch (position) {
+            case 0:
+                loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/jinpu.json");
+                break;
 
-            File fo = getDir("outdex", Context.MODE_PRIVATE);
-            fo.mkdir();
-            DexClassLoader dcl = new DexClassLoader(f.getAbsolutePath(),
-                    fo.getAbsolutePath(), null,
-                    MyApplication.ORIGINAL_LOADER.getParent());
-            MyApplication.CUSTOM_LOADER = dcl;
-            String fragmentClass = "com.anjuke.jinpu.plugin.JinpuFragment";
-            Intent intent = new Intent("com.anjuke.jinpu.plugin.PluginActivity");
-            intent.putExtra("path", f.getAbsolutePath());
-            intent.putExtra("class", fragmentClass);
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            MyApplication.CUSTOM_LOADER = null;
+            default:
+                break;
         }
     }
 
-    private void startJinpuApp(App app) {
+    private void startJinpuPlugin(PluginLoader pluginLoader) {
+        startPlugin(pluginLoader, "com.anjuke.plugin.jinpu.PluginActivity");
+    }
+
+    private void loadPlugin(String configUrl) {
+        aq.ajax(configUrl,
+                String.class, new AjaxCallback<String>() {
+                    @Override
+                    public void callback(String url, String object, AjaxStatus status) {
+                        final PluginLoader pluginLoader = new PluginLoader(JSON.parseObject(object, Plugin.class),
+                                getApplicationContext());
+                        if (!pluginLoader.hasApkFile()) {
+                            Toast.makeText(getApplicationContext(), "正在下载插件apk，请稍后..",
+                                    Toast.LENGTH_LONG).show();
+                            aq.download(pluginLoader.getPlugin().getApkUrl(), pluginLoader.getApkFile(),
+                                    new AjaxCallback<File>() {
+                                        @Override
+                                        public void callback(String url, File object, AjaxStatus status) {
+                                            startJinpuPlugin(pluginLoader);
+                                        }
+                                    });
+                        } else {
+                            startJinpuPlugin(pluginLoader);
+                        }
+                    }
+                });
+    }
+
+    private void startPlugin(PluginLoader pluginLoader, String action) {
         try {
-            Intent intent = new Intent("com.anjuke.plugin.jinpu.PluginActivity");
-            intent.putExtra("path", app.getMainFragment());
-            intent.putExtra("class", app.getApkPath());
+            ((AnjukeApplication) getApplication()).addPluginLoader(pluginLoader);
+            Intent intent = new Intent(action);
+            intent.putExtra("path", pluginLoader.getApkFile().getAbsolutePath());
+            intent.putExtra("class", pluginLoader.getPlugin().getMainFragment());
             startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();

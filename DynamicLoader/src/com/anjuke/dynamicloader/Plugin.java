@@ -1,13 +1,15 @@
 
 package com.anjuke.dynamicloader;
 
-
-public class App {
+/**
+ * @author tomkeyzhang（qitongzhang@anjuke.com）
+ * @date :2013年10月9日
+ */
+public class Plugin {
     private String mainFragment;
     private int version;
     private String packageName;
     private String apkUrl;
-    private String apkPath;
 
     public String getMainFragment() {
         return mainFragment;
@@ -39,14 +41,6 @@ public class App {
 
     public void setApkUrl(String apkUrl) {
         this.apkUrl = apkUrl;
-    }
-
-    public String getApkPath() {
-        return apkPath;
-    }
-
-    public void setApkPath(String apkPath) {
-        this.apkPath = apkPath;
     }
 
 }
