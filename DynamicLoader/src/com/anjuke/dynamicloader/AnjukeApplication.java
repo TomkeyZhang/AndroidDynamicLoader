@@ -55,27 +55,6 @@ public class AnjukeApplication extends Application {
         }
     }
 
-    // public void setPluginLoader(Plugin plugin) {
-    // File dex = getDir("dex", Context.MODE_PRIVATE);
-    // dex.mkdir();
-    // File apkFile = new File(dex, jinpuApp.getPackageName() +
-    // jinpuApp.getVersion() + ".apk");
-    // if (!apkFile.exists()) {
-    // try {
-    // AQUtility.copy(new FileInputStream(cachedApkFile), new
-    // FileOutputStream(apkFile));
-    // } catch (FileNotFoundException e) {
-    // e.printStackTrace();
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
-    // }
-    //
-    // JINPU_LOADER = new DexClassLoader(apkFile.getAbsolutePath(),
-    // fo.getAbsolutePath(), null,
-    // ORIGINAL_LOADER.getParent());
-    // }
-
     private class AnjukeClassLoader extends ClassLoader {
         public AnjukeClassLoader(ClassLoader parent) {
             super(parent);
