@@ -32,10 +32,12 @@ public class MainActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         switch (position) {
             case 0:
-                loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/jinpu.json");
+                loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/jinpu.json",
+                        "com.anjuke.plugin.jinpu.PluginActivity");
                 break;
             case 1:
-                loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/haozu.json");
+                loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/haozu.json",
+                        "com.anjuke.plugin.haozu.PluginActivity");
                 break;
 
             default:
@@ -43,11 +45,7 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    private void startJinpuPlugin(PluginLoader pluginLoader) {
-        startPlugin(pluginLoader, "com.anjuke.plugin.jinpu.PluginActivity");
-    }
-
-    private void loadPlugin(String configUrl) {
+    private void loadPlugin(String configUrl, final String action) {
         aq.ajax(configUrl,
                 String.class, new AjaxCallback<String>() {
                     @Override
@@ -61,11 +59,11 @@ public class MainActivity extends ListActivity {
                                     new AjaxCallback<File>() {
                                         @Override
                                         public void callback(String url, File object, AjaxStatus status) {
-                                            startJinpuPlugin(pluginLoader);
+                                            startPlugin(pluginLoader, action);
                                         }
                                     });
                         } else {
-                            startJinpuPlugin(pluginLoader);
+                            startPlugin(pluginLoader, action);
                         }
                     }
                 });
