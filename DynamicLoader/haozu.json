@@ -1,4 +1,4 @@
-{"mainFragment":"com.anjuke.plugin.jinpu.fragment.MainFragment",
+{"mainFragment":"com.anjuke.plugin.haozu.JinpuFragment",
 "version":1,
-"packageName":"com.anjuke.plugin.jinpu",
+"packageName":"com.anjuke.plugin.haozu",
 "apkUrl":"https://github.com/TomkeyZhang/AndroidDynamicLoader/raw/master/JinpuPlugin/JinpuPlugin.apk"}

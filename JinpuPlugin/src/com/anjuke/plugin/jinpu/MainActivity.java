@@ -2,6 +2,7 @@
 package com.anjuke.plugin.jinpu;
 
 import com.anjuke.jinpu.plugin.R;
+import com.anjuke.plugin.jinpu.fragment.MainFragment;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,7 +18,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(createRootView());
         getSupportFragmentManager().beginTransaction().add(android.R.id.primary,
-                new JinpuFragment()).commit();
+                new MainFragment()).commit();
     }
 
     private View createRootView() {
