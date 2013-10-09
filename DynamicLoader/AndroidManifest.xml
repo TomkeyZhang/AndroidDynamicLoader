@@ -37,6 +37,16 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.anjuke.plugin.haozu.PluginActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.anjuke.plugin.haozu.PluginActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

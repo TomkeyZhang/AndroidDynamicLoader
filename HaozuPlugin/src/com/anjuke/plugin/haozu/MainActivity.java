@@ -1,0 +1,37 @@
+
+package com.anjuke.plugin.haozu;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import com.anjuke.plugin.haozu.fragment.MainFragment;
+
+public class MainActivity extends FragmentActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(createRootView());
+        getSupportFragmentManager().beginTransaction().add(android.R.id.primary,
+                new MainFragment()).commit();
+    }
+
+    private View createRootView() {
+        FrameLayout rootView = new FrameLayout(this);
+        rootView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        rootView.setId(android.R.id.primary);
+        return rootView;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+}

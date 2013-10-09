@@ -24,7 +24,7 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         aq = new AQuery(this);
         setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {
-                "金铺插件"
+                "金铺插件", "好租插件"
         }));
     }
 
@@ -33,6 +33,9 @@ public class MainActivity extends ListActivity {
         switch (position) {
             case 0:
                 loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/jinpu.json");
+                break;
+            case 1:
+                loadPlugin("https://raw.github.com/TomkeyZhang/AndroidDynamicLoader/master/DynamicLoader/haozu.json");
                 break;
 
             default:
