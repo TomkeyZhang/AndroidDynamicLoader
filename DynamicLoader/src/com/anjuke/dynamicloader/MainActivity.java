@@ -45,6 +45,12 @@ public class MainActivity extends ListActivity {
         }
     }
 
+    /**
+     * 加载并启动插件
+     * 
+     * @param configUrl 插件配置信息
+     * @param action 启动插件隐式Intent的Action
+     */
     private void loadPlugin(String configUrl, final String action) {
         aq.ajax(configUrl,
                 String.class, new AjaxCallback<String>() {

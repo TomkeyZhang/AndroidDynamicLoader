@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -24,34 +25,46 @@ public class PluginActivity extends FragmentActivity {
     private AssetManager asm;
     private Resources res;
     private Theme thmeme;
-    private String apkPath;
+    private static String apkPath;
     private String fragmentClass;
 
-    public static void start(Context context, String apkPath, String fragmentClass) {
+    public static void start(Context context, String fragmentClass) {
         Intent intent = new Intent(context, PluginActivity.class);
-        intent.putExtra(EXTRA_APK_PATH, apkPath);
         intent.putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass);
+        intent.putExtra(EXTRA_APK_PATH, apkPath);
         context.startActivity(intent);
     }
 
-    private void createResAndTheme(File apkFile) {
+    public static void setApkPath(String apkPath) {
+        if (apkPath != null)
+            PluginActivity.apkPath = apkPath;
+    }
+
+    /**
+     * 创建插件的AssetManager，Resources和Theme
+     * 
+     * @param apkFile
+     */
+    private void createResAndTheme() {
+        if (TextUtils.isEmpty(apkPath))
+            return;
         try {
+            File apkFile = new File(apkPath);
             AssetManager am = (AssetManager) AssetManager.class
                     .newInstance();
             am.getClass().getMethod("addAssetPath", String.class)
                     .invoke(am, apkFile.getAbsolutePath());
             asm = am;
+            Resources superRes = super.getResources();
+
+            res = new Resources(asm, superRes.getDisplayMetrics(),
+                    superRes.getConfiguration());
+
+            thmeme = res.newTheme();
+            thmeme.setTo(super.getTheme());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        Resources superRes = super.getResources();
-
-        res = new Resources(asm, superRes.getDisplayMetrics(),
-                superRes.getConfiguration());
-
-        thmeme = res.newTheme();
-        thmeme.setTo(super.getTheme());
     }
 
     private void loadFragment() {
@@ -79,13 +92,13 @@ public class PluginActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle bundle) {
         if (bundle == null) {
-            apkPath = getIntent().getStringExtra(EXTRA_APK_PATH);
+            setApkPath(getIntent().getStringExtra(EXTRA_APK_PATH));
             fragmentClass = getIntent().getStringExtra(EXTRA_FRAGMENT_CLASS);
         } else {
-            apkPath = bundle.getString(EXTRA_APK_PATH);
+            setApkPath(bundle.getString(EXTRA_APK_PATH));
             fragmentClass = bundle.getString(EXTRA_FRAGMENT_CLASS);
         }
-        createResAndTheme(new File(apkPath));
+        createResAndTheme();
         super.onCreate(bundle);
         setContentView(createRootView());
         loadFragment();
