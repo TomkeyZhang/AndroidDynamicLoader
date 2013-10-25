@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * @author tomkeyzhang（qitongzhang@anjuke.com）
@@ -34,6 +35,10 @@ public class AnjukeApplication extends Application {
     public void addPluginLoader(PluginLoader pluginLoader) {
         pluginLoader.createClassLoader(optimizedDirectory, ORIGINAL_LOADER.getParent());
         pluginLoaders.add(pluginLoader);
+    }
+
+    public void onResume() {
+        Log.d("zqt", "DynamicLoader onResume");
     }
 
     private void initOriginalLoader() {

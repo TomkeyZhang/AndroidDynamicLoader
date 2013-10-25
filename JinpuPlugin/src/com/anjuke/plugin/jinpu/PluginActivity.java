@@ -2,6 +2,8 @@
 package com.anjuke.plugin.jinpu;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,6 +36,25 @@ public class PluginActivity extends FragmentActivity {
         intent.putExtra(EXTRA_FRAGMENT_CLASS, fragmentClass);
         intent.putExtra(EXTRA_APK_PATH, apkPath);
         return intent;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            Log.d("zqt", getApplication() + "");
+
+            Method method = getApplication().getClass().getMethod("onResume");
+            method.invoke(getApplication());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setApkPath(String apkPath) {
